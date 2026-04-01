@@ -11,11 +11,6 @@ final class SettingsViewModel: ObservableObject {
     /// 사용자 환경설정
     @Published var preferences: UserPreferences
 
-    // MARK: - 의존성
-
-    /// 프리미엄 서비스
-    var premiumService: PremiumService
-
     // MARK: - 읽기 전용 프로퍼티
 
     /// 앱 버전 문자열
@@ -26,15 +21,9 @@ final class SettingsViewModel: ObservableObject {
     // MARK: - 초기화
 
     /// SettingsViewModel 초기화
-    /// - Parameters:
-    ///   - preferences: 사용자 환경설정 (기본값: UserPreferences 기본 인스턴스)
-    ///   - premiumService: 프리미엄 서비스
-    init(
-        preferences: UserPreferences = UserPreferences(),
-        premiumService: PremiumService
-    ) {
+    /// - Parameter preferences: 사용자 환경설정 (기본값: UserPreferences 기본 인스턴스)
+    init(preferences: UserPreferences = UserPreferences()) {
         self.preferences = preferences
-        self.premiumService = premiumService
     }
 
     // MARK: - 카테고리 관리

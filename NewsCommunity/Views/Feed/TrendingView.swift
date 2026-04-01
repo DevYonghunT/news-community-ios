@@ -3,12 +3,7 @@ import SwiftUI
 // MARK: - 트렌딩 뷰
 /// 실시간 인기 기사 순위 목록
 struct TrendingView: View {
-    @EnvironmentObject var premiumService: PremiumService
-    @StateObject private var viewModel: FeedViewModel
-
-    init() {
-        _viewModel = StateObject(wrappedValue: FeedViewModel(premiumService: PremiumService()))
-    }
+    @StateObject private var viewModel = FeedViewModel()
 
     var body: some View {
         ScrollView {
@@ -34,7 +29,6 @@ struct TrendingView: View {
         .background(AppColor.background)
         .navigationTitle("트렌딩")
         .task {
-            viewModel.premiumService = premiumService
             await viewModel.loadTrending()
         }
         .refreshable {

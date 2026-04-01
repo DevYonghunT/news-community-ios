@@ -33,24 +33,15 @@ final class FeedViewModel: ObservableObject {
     /// 뉴스 데이터 서비스
     private let newsService: NewsServiceProtocol
 
-    /// 프리미엄 서비스
-    var premiumService: PremiumService
-
     /// SwiftData 모델 컨텍스트
     private var modelContext: ModelContext?
 
     // MARK: - 초기화
 
     /// FeedViewModel 초기화
-    /// - Parameters:
-    ///   - newsService: 뉴스 서비스 (기본값: MockNewsService)
-    ///   - premiumService: 프리미엄 서비스
-    init(
-        newsService: NewsServiceProtocol = MockNewsService(),
-        premiumService: PremiumService
-    ) {
+    /// - Parameter newsService: 뉴스 서비스 (기본값: MockNewsService)
+    init(newsService: NewsServiceProtocol = MockNewsService()) {
         self.newsService = newsService
-        self.premiumService = premiumService
     }
 
     // MARK: - 컨텍스트 설정
@@ -98,24 +89,10 @@ final class FeedViewModel: ObservableObject {
 
     // MARK: - 기사 상호작용
 
-    /// 북마크 토글 (프리미엄 한도 확인)
+    /// 북마크 토글 (모든 기능 해제 — 제한 없음)
     /// - Parameter article: 토글할 기사
     func toggleBookmark(_ article: NewsArticle) {
-        // 이미 북마크된 경우 해제
-        if article.isBookmarked {
-            article.isBookmarked = false
-            saveContext()
-            return
-        }
-
-        // 북마크 추가 시 프리미엄 한도 확인
-        let currentBookmarkCount = countBookmarks()
-        guard premiumService.premiumStatus.canBookmark(currentCount: currentBookmarkCount) else {
-            Logger(subsystem: "com.entangle.newscommunity", category: "Feed").warning("북마크 한도 초과 (현재: \(currentBookmarkCount), 제한: \(AppConstants.freeBookmarkLimit))")
-            return
-        }
-
-        article.isBookmarked = true
+        article.isBookmarked.toggle()
         saveContext()
     }
 
@@ -150,22 +127,6 @@ final class FeedViewModel: ObservableObject {
     }
 
     // MARK: - 비공개 헬퍼
-
-    /// 현재 북마크된 기사 수 조회
-    private func countBookmarks() -> Int {
-        guard let context = modelContext else { return 0 }
-
-        let descriptor = FetchDescriptor<NewsArticle>(
-            predicate: #Predicate { $0.isBookmarked == true }
-        )
-
-        do {
-            return try context.fetchCount(descriptor)
-        } catch {
-            Logger(subsystem: "com.entangle.newscommunity", category: "Feed").error("북마크 수 조회 실패: \(error.localizedDescription)")
-            return 0
-        }
-    }
 
     /// 모델 컨텍스트 저장
     private func saveContext() {

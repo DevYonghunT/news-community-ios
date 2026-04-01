@@ -3,8 +3,6 @@ import SwiftUI
 // MARK: - 메인 탭 뷰
 /// 앱의 최상위 탭 네비게이션 구조
 struct MainTabView: View {
-    @EnvironmentObject var premiumService: PremiumService
-
     /// 현재 선택된 탭
     @State private var selectedTab: Int = 0
 

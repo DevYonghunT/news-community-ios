@@ -31,24 +31,18 @@ final class ArticleDetailViewModel: ObservableObject {
     /// 댓글 서비스
     private let commentService: CommentService
 
-    /// 프리미엄 서비스
-    private let premiumService: PremiumService
-
     // MARK: - 초기화
 
     /// ArticleDetailViewModel 초기화
     /// - Parameters:
     ///   - article: 표시할 기사
     ///   - commentService: 댓글 서비스 (기본값: CommentService)
-    ///   - premiumService: 프리미엄 서비스 (기본값: 싱글톤)
     init(
         article: NewsArticle,
-        commentService: CommentService = CommentService(),
-        premiumService: PremiumService = .shared
+        commentService: CommentService = CommentService()
     ) {
         self.article = article
         self.commentService = commentService
-        self.premiumService = premiumService
     }
 
     // MARK: - 컨텍스트 설정
@@ -125,23 +119,9 @@ final class ArticleDetailViewModel: ObservableObject {
 
     // MARK: - 기사 상호작용
 
-    /// 북마크 토글 (프리미엄 한도 확인)
+    /// 북마크 토글 (모든 기능 해제 — 제한 없음)
     func toggleBookmark() {
-        // 이미 북마크된 경우 해제는 항상 허용
-        if article.isBookmarked {
-            article.isBookmarked = false
-            saveContext()
-            return
-        }
-
-        // 북마크 추가 시 프리미엄 한도 확인
-        let currentCount = countBookmarks()
-        guard premiumService.premiumStatus.canBookmark(currentCount: currentCount) else {
-            errorMessage = "무료 사용자는 북마크를 \(AppConstants.freeBookmarkLimit)개까지 저장할 수 있습니다."
-            return
-        }
-
-        article.isBookmarked = true
+        article.isBookmarked.toggle()
         saveContext()
     }
 
@@ -152,21 +132,6 @@ final class ArticleDetailViewModel: ObservableObject {
     }
 
     // MARK: - 비공개 헬퍼
-
-    /// 현재 북마크된 기사 수 조회
-    private func countBookmarks() -> Int {
-        guard let context = modelContext else { return 0 }
-
-        let descriptor = FetchDescriptor<NewsArticle>(
-            predicate: #Predicate { $0.isBookmarked == true }
-        )
-
-        do {
-            return try context.fetchCount(descriptor)
-        } catch {
-            return 0
-        }
-    }
 
     /// 모델 컨텍스트 저장
     private func saveContext() {

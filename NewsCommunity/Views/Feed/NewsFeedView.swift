@@ -3,12 +3,7 @@ import SwiftUI
 // MARK: - 뉴스 피드 뷰
 /// 메인 뉴스 피드 화면. 카테고리 필터링, 검색, 기사 목록 표시
 struct NewsFeedView: View {
-    @EnvironmentObject var premiumService: PremiumService
-    @StateObject private var viewModel: FeedViewModel
-
-    init() {
-        _viewModel = StateObject(wrappedValue: FeedViewModel(premiumService: PremiumService()))
-    }
+    @StateObject private var viewModel = FeedViewModel()
 
     var body: some View {
         ScrollView {
@@ -29,7 +24,6 @@ struct NewsFeedView: View {
             await viewModel.loadArticles()
         }
         .task {
-            viewModel.premiumService = premiumService
             await viewModel.loadArticles()
         }
     }

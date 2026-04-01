@@ -2,15 +2,6 @@ import SwiftUI
 
 // MARK: - 앱 상수 정의
 enum AppConstants {
-    /// 무료 사용자 북마크 제한 수
-    static let freeBookmarkLimit: Int = 10
-
-    /// 프리미엄 월간 구독 가격
-    static let premiumMonthlyPrice: String = "$2.99"
-
-    /// 프리미엄 월간 구독 상품 ID
-    static let premiumProductID: String = "com.entangle.newscommunity.premium.monthly"
-
     /// 앱 이름
     static let appName: String = "News Community"
 }
